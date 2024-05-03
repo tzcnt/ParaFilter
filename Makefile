@@ -1,24 +1,26 @@
 BINARY_DEBUG=./target/debug/bin-debug
 BINARY_RELEASE=./target/release/bin-release
+BINARY_TEST=./target/test/bin-test
 CODEDIRS=. ./src
+TESTDIRS=./test
 INCDIRS=. ./src/include
 
 CC=g++
 OPT=-O0
 
 DEBUGFLAGS=-g -ggdb
-# generate files that encode make rules for the .h dependencies
 DEPFLAGS=-MP -MD
-# automatically add the -I onto each include directory
 CFLAGS=-Wall -Wextra $(DEBUGFLAGS) $(foreach D,$(INCDIRS),-I$(D)) $(OPT) $(DEPFLAGS)
+LDFLAGS=-lgtest -lgtest_main -pthread  # Linking Google Test libs
 
-# for-style iteration (foreach) and regular expression completions (wildcard)
 CPPFILES=$(foreach D,$(CODEDIRS),$(wildcard $(D)/*.cpp))
-# regular expression replacement
+TESTFILES=$(foreach D,$(TESTDIRS),$(wildcard $(D)/*.cpp))
 OBJECTS=$(patsubst %.cpp,%.o,$(CPPFILES))
-DEPFILES=$(patsubst %.cpp,%.d,$(CPPFILES))
+OBJECTS_NOMAIN=$(patsubst %.cpp,%.o,$(filter-out ./src/main.cpp, $(CPPFILES)))  # Excludes main.cpp
+TESTOBJECTS=$(patsubst %.cpp,%.o,$(TESTFILES))
+DEPFILES=$(patsubst %.cpp,%.d,$(CPPFILES) $(TESTFILES))
 
-all: $(BINARY_DEBUG)
+all: $(BINARY_DEBUG) test
 
 $(BINARY_DEBUG): $(OBJECTS)
 	$(CC) -o $@ $^
@@ -26,16 +28,19 @@ $(BINARY_DEBUG): $(OBJECTS)
 $(BINARY_RELEASE): $(OBJECTS)
 	$(CC) -o $@ $^
 
-# only want the .c file dependency here, thus $< instead of $^.
+$(BINARY_TEST): $(OBJECTS_NOMAIN) $(TESTOBJECTS)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
 %.o:%.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -rf $(BINARY_DEBUG) $(BINARY_RELEASE) $(OBJECTS) $(DEPFILES)
+	rm -rf $(BINARY_DEBUG) $(BINARY_RELEASE) $(BINARY_TEST) $(OBJECTS) $(TESTOBJECTS) $(DEPFILES)
+
+test: $(BINARY_TEST)
+	./$(BINARY_TEST)
 
 # include the dependencies
 -include $(DEPFILES)
 
-# add .PHONY so that the non-targetfile - rules work even if a file with the same name exists.
-.PHONY: all clean
-
+.PHONY: all clean test
