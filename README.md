@@ -12,7 +12,6 @@ ParaFilter is a project aimed at implementing a low pass filter on images using 
 ## How to Build
 ### Clone the repository to your local machine
 ```
-
 git clone https://github.com/omagdy7/ParaFilter.git
 ```
 ### Navigate to the project directory
