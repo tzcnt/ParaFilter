@@ -11,13 +11,13 @@ ParaFilter is a project aimed at implementing a low pass filter on images using 
 
 ## How to Build
 ### Clone the repository to your local machine
-`git clone https://github.com/omagdy7/ParaFilter.git`
+```git clone https://github.com/omagdy7/ParaFilter.git```
 ### Navigate to the project directory
-`cd ParaFilter`
+```cd ParaFilter```
 ### Create a build directory:
-`mkdir build && cd build`
+```mkdir build && cd build```
 ### Generate build files using CMake:
-`cmake ..`
+```cmake ..```
 ### Build the project:
-`cmake --build . --target bin-debug`
+```cmake --build . --target bin-debug```
 
