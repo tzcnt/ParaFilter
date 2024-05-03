@@ -13,6 +13,7 @@ enum class Filter {
   HighPass5x5, ///< High pass filter with a 5x5 kernel.
   Gaussian     ///< Gaussian blur filter.
 };
+
 /**
  * @typedef Kernel
  * @brief Typedef for a 2D vector of floats to represent the convolution kernel
@@ -20,12 +21,11 @@ enum class Filter {
  */
 using Kernel = std::vector<std::vector<float>>;
 
-extern std::map<Filter, Kernel> kernels;
-
-void applyKernel(const unsigned char *input, unsigned char *output, int width,
-                 int height, int channels, const Kernel &kernel);
-
 /**
  * @var kernels
  * @brief Map to store various predefined kernels, accessible by filter type.
  */
+extern std::map<Filter, Kernel> kernels;
+
+void applyKernel(const unsigned char *input, unsigned char *output, int width,
+                 int height, int channels, const Kernel &kernel);

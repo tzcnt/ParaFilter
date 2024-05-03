@@ -1,6 +1,11 @@
 #include "../src/include/image_processing.h"
 #include <gtest/gtest.h>
 
+// 10 10 10 10 10
+// 10 10 10 10 10
+// 10 10 50 10 10
+// 10 10 10 10 10
+// 10 10 10 10 10
 TEST(LowPassFilterTest, LowPass3x3) {
   int width = 5, height = 5,
       channels = 1; // Slightly larger image to have a meaningful center
