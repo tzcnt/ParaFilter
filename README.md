@@ -17,22 +17,18 @@ git clone https://github.com/omagdy7/ParaFilter.git
 ```
 ### Navigate to the project directory
 ```
-
 cd ParaFilter
 ```
 ### Create a build directory:
 ```
-
 mkdir build && cd build
 ```
 ### Generate build files using CMake:
 ```
-
 cmake ..
 ```
 ### Build the project:
 ```
-
 cmake --build . --target bin-debug
 ```
 
