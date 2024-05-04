@@ -1,4 +1,8 @@
 #include "include/image.h"
+#include <cstdint>
+#include <iostream>
+#include <iterator>
+#include <ostream>
 #define STB_IMAGE_IMPLEMENTATION
 #include "include/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION

@@ -15,8 +15,8 @@ TEST(LowPassFilterTest, LowPass3x3) {
   std::vector<unsigned char> outputImage(width * height * channels, 0);
 
   Kernel kernel = kernels[Filter::LowPass3x3];
-  applyKernel(testImage.data(), outputImage.data(), width, height, channels,
-              kernel);
+  applyKernelSeq(testImage.data(), outputImage.data(), width, height, channels,
+                 kernel);
 
   // Expected output should show the averaging effect, but we ignore the edges
   int expectedCenterValue = (10 + 10 + 10 + 10 + 50 + 10 + 10 + 10 + 10) / 9;

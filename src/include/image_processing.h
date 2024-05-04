@@ -1,6 +1,8 @@
 #pragma once
 #include <map>
 #include <vector>
+#include <omp.h>
+#include "image.h"
 
 /**
  * @enum Filter
@@ -16,8 +18,7 @@ enum class Filter {
 
 /**
  * @typedef Kernel
- * @brief Typedef for a 2D vector of floats to represent the convolution kernel
- * matrix.
+ * @brief Typedef for a 2D vector of floats to represent the convolution kernel matrix.
  */
 using Kernel = std::vector<std::vector<float>>;
 
@@ -26,6 +27,6 @@ using Kernel = std::vector<std::vector<float>>;
  * @brief Map to store various predefined kernels, accessible by filter type.
  */
 extern std::map<Filter, Kernel> kernels;
-
-void applyKernel(const unsigned char *input, unsigned char *output, int width,
-                 int height, int channels, const Kernel &kernel);
+Image applyKernelSeq(Image &img, const Kernel &kernel);
+Image applyKernelOpenMp(Image &img, const Kernel &kernel);
+Image applyKernelMPI(Image &img, const Kernel &kernel);

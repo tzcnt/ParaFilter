@@ -28,7 +28,7 @@ add_executable(bin-debug ${SOURCES})
 target_compile_options(bin-debug PRIVATE -O0 -g -ggdb -MP -MD)
 
 add_executable(bin-release ${SOURCES})
-target_compile_options(bin-release PRIVATE -O3 -MP -MD)  # Assuming you want optimization level O3 for release
+target_compile_options(bin-release PRIVATE -O3 -MP -MD)
 
 # Create the test binary
 add_executable(bin-test ${SOURCES_NOMAIN} ${TEST_SOURCES})
@@ -42,4 +42,3 @@ add_custom_target(clean_all
 # Test command
 enable_testing()
 add_test(NAME GoogleTest COMMAND bin-test)
-
