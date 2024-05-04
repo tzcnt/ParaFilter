@@ -84,21 +84,9 @@ Image applyKernelSeq(Image &img, const Kernel &kernel) {
 
 /**
  * @brief Applies a convolution kernel to an input image to produce an output image.
- *
- * This function takes an input image and a convolution kernel, applies the
- * convolution operation pixel by pixel by using the kernel, and produces the
- * output image.
- *
- * @param input Pointer to the input image data (continuous memory block).
- * @param output Pointer to the output image data where the result should be stored.
- * @param width The width of the image in pixels.
- * @param height The height of the image in pixels.
- * @param channels The number of channels in the image (e.g., 3 for RGB, 1 for grayscale).
- * @param kernel The convolution kernel as a 2D vector of floats. The kernel
- * should be a square matrix (n x n) and usually has odd dimensions (3x3, 5x5, etc.).
  */
 
-Image applyKernelOpenMp(Image &img, const Kernel &kernel) {
+Image applyKernelOpenMp(Image &img, const Kernel &kernel, int nthreads) {
   int kernelSize = kernel.size();
   int kHalf = kernelSize / 2;
 
@@ -106,7 +94,7 @@ Image applyKernelOpenMp(Image &img, const Kernel &kernel) {
   unsigned char *output =
       new unsigned char[img.width * img.height * img.channels];
 
-  omp_set_num_threads(8);
+  omp_set_num_threads(nthreads);
 
   // Loop over each pixel in the image
 #pragma omp parallel for collapse(2)
