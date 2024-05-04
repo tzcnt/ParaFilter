@@ -9,9 +9,10 @@ CC=g++
 OPT=-O0
 
 DEBUGFLAGS=-g -ggdb
+RELEASE_FLAGS=-O2 -march=native
 DEPFLAGS=-MP -MD
-CFLAGS=-Wall -Wextra $(DEBUGFLAGS) $(foreach D,$(INCDIRS),-I$(D)) $(OPT) $(DEPFLAGS)
-LDFLAGS=-lgtest -lgtest_main -pthread  # Linking Google Test libs
+CFLAGS=-Wall -Wextra -fopenmp $(foreach D,$(INCDIRS),-I$(D)) $(OPT) $(DEPFLAGS)
+LDFLAGS_TEST=-lgtest -lgtest_main -pthread  # Linking Google Test libs
 
 CPPFILES=$(foreach D,$(CODEDIRS),$(wildcard $(D)/*.cpp))
 TESTFILES=$(foreach D,$(TESTDIRS),$(wildcard $(D)/*.cpp))
@@ -20,16 +21,23 @@ OBJECTS_NOMAIN=$(patsubst %.cpp,%.o,$(filter-out ./src/main.cpp, $(CPPFILES)))  
 TESTOBJECTS=$(patsubst %.cpp,%.o,$(TESTFILES))
 DEPFILES=$(patsubst %.cpp,%.d,$(CPPFILES) $(TESTFILES))
 
-all: $(BINARY_DEBUG) test
+all: $(BINARY_DEBUG)
+
+
+debug: $(BINARY_DEBUG)
+	$(BINARY_DEBUG)
 
 $(BINARY_DEBUG): $(OBJECTS)
-	$(CC) -o $@ $^
+	$(CC) $(DEBUGFLAGS) -fopenmp -o $@ $^
+
+release: $(BINARY_RELEASE)
+	$(BINARY_RELEASE)
 
 $(BINARY_RELEASE): $(OBJECTS)
-	$(CC) -o $@ $^
+	$(CC) $(RELEASE_FLAGS) -fopenmp -o $@ $^
 
 $(BINARY_TEST): $(OBJECTS_NOMAIN) $(TESTOBJECTS)
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -fopenmp -o $@ $^ $(LDFLAGS_TEST)
 
 %.o:%.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
