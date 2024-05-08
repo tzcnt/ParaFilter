@@ -7,18 +7,12 @@
 
 void image_data_deleter(unsigned char *p);
 
-struct Pixel {
-  unsigned char r, g, b, a;
-
-  Pixel() : r(0), g(0), b(0), a(255) {} // Default to opaque black
-  Pixel(unsigned char r, unsigned char g, unsigned char b,
-        unsigned char a = 255)
-      : r(r), g(g), b(b), a(a) {}
-};
-
 struct Image {
   int width, height, channels;
   std::unique_ptr<unsigned char, decltype(&image_data_deleter)> data;
+
+  Image()
+      : width(0), height(0), channels(0), data(nullptr, &image_data_deleter) {}
 
   Image(unsigned char *data, int width, int height, int channels)
       : width(width), height(height), channels(channels),
@@ -59,4 +53,5 @@ struct Image {
   bool save(const char *filename, const char *format);
 
   bool pad(int borderSize);
+  bool pad_vertical(int borderSize);
 };

@@ -29,4 +29,5 @@ using Kernel = std::vector<std::vector<float>>;
 extern std::map<Filter, Kernel> kernels;
 Image applyKernelSeq(Image &img, const Kernel &kernel);
 Image applyKernelOpenMp(Image &img, const Kernel &kernel, int nthreads);
+Image applyKernelOpenMpTiling(Image &img, const Kernel &kernel, int nthreads);
 Image applyKernelMPI(Image &img, const Kernel &kernel);

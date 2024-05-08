@@ -1,9 +1,7 @@
 #include "include/image_processing.h"
 #include "include/image.h"
-#include <iostream>
-#include <iterator>
 #include <omp.h>
-#include <ostream>
+#include <vector>
 
 template <typename T> T clamp(T value, T min, T max) {
   if (value < min) {
@@ -30,11 +28,11 @@ std::map<Filter, Kernel> kernels =
        {-1.0f / 4, 2.0f, -1.0f / 4},
        {-1.0f / 4, -1.0f / 4, -1.0f / 4}}},
      {Filter::HighPass5x5,
-      {{-1 / 25.0, -1 / 25.0, -1 / 25.0, -1 / 25.0, -1 / 25.0},
-       {-1 / 25.0, -1 / 25.0, -1 / 25.0, -1 / 25.0, -1 / 25.0},
-       {-1 / 25.0, -1 / 25.0, 24, -1 / 25.0, -1 / 25.0},
-       {-1 / 25.0, -1 / 25.0, -1 / 25.0, -1 / 25.0, -1 / 25.0},
-       {-1 / 25.0, -1 / 25.0, -1 / 25.0, -1 / 25.0, -1 / 25.0}}},
+      {{-1 / 16.0f, -1 / 16.0f, -1 / 16.0f, -1 / 16.0f, -1 / 16.0f},
+       {-1 / 16.0f, 1 / 16.0f, 2 / 16.0f, 1 / 16.0f, -1 / 16.0f},
+       {-1 / 16.0f, 2 / 16.0f, 4, 2 / 16.0f, -1 / 16.0f},
+       {-1 / 16.0f, 1 / 16.0f, 2 / 16.0f, 1 / 16.0f, -1 / 16.0f},
+       {-1 / 16.0f, -1 / 16.0f, -1 / 16.0f, -1 / 16.0f, -1 / 16.0f}}},
      {Filter::Gaussian,
       {{1.0f / 16, 2.0f / 16, 1.0f / 16},
        {2.0f / 16, 4.0f / 16, 2.0f / 16},
@@ -86,6 +84,8 @@ Image applyKernelSeq(Image &img, const Kernel &kernel) {
  * @brief Applies a convolution kernel to an input image to produce an output image.
  */
 
+#define PAD 8
+
 Image applyKernelOpenMp(Image &img, const Kernel &kernel, int nthreads) {
   int kernelSize = kernel.size();
   int kHalf = kernelSize / 2;
@@ -100,6 +100,8 @@ Image applyKernelOpenMp(Image &img, const Kernel &kernel, int nthreads) {
 #pragma omp parallel for collapse(2)
   for (int y = kHalf; y < img.height - kHalf; y++) {
     for (int x = kHalf; x < img.width - kHalf; x++) {
+      /* std::vector<std::vector<float>> sum(img.channels, */
+      /*                                     std::vector<float>(PAD, 0.0f)); */
       std::vector<float> sum(img.channels, 0.0f);
 
       // Perform the convolution operation

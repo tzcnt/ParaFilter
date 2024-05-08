@@ -1,8 +1,4 @@
 #include "include/image.h"
-#include <cstdint>
-#include <iostream>
-#include <iterator>
-#include <ostream>
 #define STB_IMAGE_IMPLEMENTATION
 #include "include/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -25,13 +21,35 @@ bool Image::save(const char *filename, const char *format) {
   return false; // Unsupported format
 }
 
+bool Image::pad_vertical(int borderSize) {
+  int newHeight = height + 2 * borderSize;
+  std::unique_ptr<unsigned char, decltype(&image_data_deleter)> newData(
+      new unsigned char[width * newHeight * channels], image_data_deleter);
+
+  // Initialize new image data with zeros
+  memset(newData.get(), 0, width * newHeight * channels);
+
+  // Copy original image data to the center of the new image
+  for (int y = 0; y < height; ++y) {
+    unsigned char *src = data.get() + y * width * channels;
+    unsigned char *dst = newData.get() + (y + borderSize) * width * channels;
+    memcpy(dst, src, width * channels);
+  }
+
+  // Replace the old data with the new padded data
+  height = newHeight;
+  data.swap(newData);
+
+  return true;
+}
+
 bool Image::pad(int borderSize) {
   int newWidth = width + 2 * borderSize;
   int newHeight = height + 2 * borderSize;
   std::unique_ptr<unsigned char, decltype(&image_data_deleter)> newData(
       new unsigned char[newWidth * newHeight * channels], image_data_deleter);
 
-  // Initialize new image data with padValue
+  // Initialize new image data with zeros
   memset(newData.get(), 0, newWidth * newHeight * channels);
 
   // Copy original image data to the center of the new image
