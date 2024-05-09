@@ -7,17 +7,14 @@
 
 using namespace std;
 
-#define USE_MPI 1
-
+#if USE_MPI
 int main(int argc, char *argv[]) {
-  int width, height, channels;
   const char *tigerFile = "./examples/tiger.jpg";
   const char *tigerOutputFile = "./outputs/tiger_modified.jpg";
 
   const char *lenaFile = "./examples/lena.png";
   const char *lenaOutputFile = "./outputs/lena_modified.png";
 
-#if USE_MPI
   MPI_Init(&argc, &argv);
 
   int rank, size;
@@ -25,7 +22,7 @@ int main(int argc, char *argv[]) {
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
   Image img;
-  Kernel kernel = kernels[Filter::HighPass3x3];
+  Kernel kernel = kernels[Filter::LowPass3x3];
 
   if (rank == 0) {
     try {
@@ -57,7 +54,8 @@ int main(int argc, char *argv[]) {
 
   Image local_sub_image(sub_image_data, img.width, (rows_per_process + extra),
                         img.channels);
-  Image processed_sub_image = applyKernelMPI(local_sub_image, kernel);
+  /* local_sub_image.pad(kernel.size() / 2); */
+  Image processed_sub_image = applyKernelSeq(local_sub_image, kernel);
 
   // Gather processed sub-images back to the root
   unsigned char *output_data = nullptr;
@@ -65,31 +63,36 @@ int main(int argc, char *argv[]) {
     output_data = new unsigned char[img.width * img.height * img.channels];
   }
 
-  num_elements = processed_sub_image.width *
-                 (processed_sub_image.height - extra) *
-                 processed_sub_image.channels;
+  num_elements -= img.width * img.channels;
 
-  MPI_Gather(processed_sub_image.data.get(), num_elements, MPI_UNSIGNED_CHAR,
-             output_data, num_elements, MPI_UNSIGNED_CHAR, 0, MPI_COMM_WORLD);
+  MPI_Gather(processed_sub_image.data.get() + (img.width * img.channels),
+             num_elements, MPI_UNSIGNED_CHAR, output_data, num_elements,
+             MPI_UNSIGNED_CHAR, 0, MPI_COMM_WORLD);
 
-  if (rank == 0) {
-    Image finalOutput = Image(output_data, img.width,
-                              img.height - (extra * size), img.channels);
-    finalOutput.save(lenaOutputFile, "png");
-  }
+  Image finalOutput = Image(output_data, img.width, img.height, img.channels);
+  finalOutput.save(lenaOutputFile, "jpg");
 
   MPI_Finalize();
-  return 0;
+  return EXIT_SUCCESS;
+}
+
 #else
-  // Load image
+int main() {
+
+  const char *tigerFile = "./examples/tiger.jpg";
+  const char *tigerOutputFile = "./outputs/tiger_modified.jpg";
+
+  const char *lenaFile = "./examples/lena.png";
+  const char *lenaOutputFile = "./outputs/lena_modified.png";
   try {
+    // Load image
     Image img = Image::load(lenaFile);
-    Kernel kernel = kernels[Filter::HighPass3x3];
+    Kernel kernel = kernels[Filter::LowPass3x3];
     img.pad(kernel.size() / 2);
 
     Image outputImage = applyKernelOpenMp(img, kernel, 1);
 
-    if (!outputImage.save(lenaOutputFile, "png")) {
+    if (!outputImage.save(lenaOutputFile, "jpg")) {
       cerr << "Failed to save image as jpg." << endl;
     }
     cout << "Filtering completed and image saved to: " << tigerOutputFile
@@ -98,6 +101,6 @@ int main(int argc, char *argv[]) {
     cerr << "Error: " << e.what() << endl;
   }
 
-#endif
   return EXIT_SUCCESS;
 }
+#endif
