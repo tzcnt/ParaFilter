@@ -28,7 +28,7 @@ OBJECTS_NOMAIN=$(patsubst %.cpp,%.o,$(filter-out ./src/main.cpp, $(CPPFILES)))  
 TESTOBJECTS=$(patsubst %.cpp,%.o,$(TESTFILES))
 BENCHOBJECTS=$(patsubst %.cpp,%.o,$(BENCHFILES))
 
-DEPFILES=$(patsubst %.cpp,%.d,$(CPPFILES) $(TESTFILES))
+DEPFILES=$(patsubst %.cpp,%.d,$(CPPFILES) $(TESTFILES) $(BENCHFILES))
 
 NUM_PROCESS=4
 

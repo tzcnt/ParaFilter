@@ -1,44 +1,53 @@
 cmake_minimum_required(VERSION 3.10)
 project(ParaFilter)
 
-# Set C++ compiler
+# Set the C++ compiler and the flags
 set(CMAKE_CXX_COMPILER g++)
-
-# Set the C++ standard
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
-# Compiler options
-add_compile_options(-Wall -Wextra)
-add_compile_definitions($<$<CONFIG:DEBUG>:DEBUG>)
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -fopenmp")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -ggdb")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -flto -fuse-linker-plugin -ftree-vectorize")
 
 # Include directories
-include_directories(${PROJECT_SOURCE_DIR}/src/include)
+include_directories(${CMAKE_SOURCE_DIR}/src/include ${CMAKE_SOURCE_DIR})
 
-# Source files and test files
+# Find all source files
 file(GLOB_RECURSE SOURCES "src/*.cpp")
-file(GLOB_RECURSE SOURCES_NOMAIN "src/*.cpp")
-file(GLOB_RECURSE TEST_SOURCES "test/*.cpp")
+file(GLOB_RECURSE TEST_SOURCES "test/*.cpp" "src/*.cpp")
+file(GLOB_RECURSE BENCH_SOURCES "benchmark/*.cpp" "src/*.cpp")
 
-# Exclude the main.cpp file for the test build
-list(FILTER SOURCES_NOMAIN EXCLUDE REGEX ".*main\\.cpp$")
-
-# Create the debug and release binaries
+# Create the main executable
 add_executable(bin-debug ${SOURCES})
-target_compile_options(bin-debug PRIVATE -O0 -g -ggdb -MP -MD)
-
 add_executable(bin-release ${SOURCES})
-target_compile_options(bin-release PRIVATE -O3 -MP -MD)
 
-# Create the test binary
-add_executable(bin-test ${SOURCES_NOMAIN} ${TEST_SOURCES})
-target_link_libraries(bin-test PRIVATE gtest gtest_main pthread)
-target_compile_options(bin-test PRIVATE -O0 -g -ggdb -MP -MD)
+list(FILTER TEST_SOURCES EXCLUDE REGEX ".*main\\.cpp$")
+list(FILTER BENCH_SOURCES EXCLUDE REGEX ".*main\\.cpp$")
 
-# Custom target for clean command
-add_custom_target(clean_all
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_BINARY_DIR})
+# MPI version
+find_package(MPI REQUIRED)
+add_executable(bin-debug-mpi ${SOURCES})
+target_compile_definitions(bin-debug-mpi PRIVATE USE_MPI=1)
+target_link_libraries(bin-debug-mpi MPI::MPI_CXX)
 
-# Test command
+# Testing executable
+list(FILTER SOURCES EXCLUDE REGEX ".*main.cpp$")
+add_executable(bin-test ${TEST_SOURCES})
+target_link_libraries(bin-test gtest gtest_main pthread)
+
+# Benchmark executable
+add_executable(bin-bench ${BENCH_SOURCES})
+target_link_libraries(bin-bench benchmark pthread)
+
+# Add custom targets for clean and test
+add_custom_target(clean-all
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/clean.cmake
+)
+
 enable_testing()
-add_test(NAME GoogleTest COMMAND bin-test)
+add_test(NAME TestAll COMMAND bin-test)
+add_custom_target(test-bin
+    COMMAND ${CMAKE_TEST_COMMAND} --verbose
+)
+
+add_custom_target(bench
+    COMMAND ./bin-bench
+)
