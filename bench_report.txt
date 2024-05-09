@@ -1,0 +1,31 @@
+make[1]: Entering directory '/run/media/omar/Storage/omar/College/Spring 2024/HPC/Project/ParaFilter'
+./target/bench/bin-bench
+--------------------------------------------------------
+Benchmark              Time             CPU   Iterations
+--------------------------------------------------------
+BM_Sequential       5957 ms         5950 ms            1
+BM_OpenMP/4         2505 ms         2502 ms            1
+BM_OpenMP/8         1816 ms         1814 ms            1
+BM_OpenMP/12        1502 ms         1500 ms            1
+BM_OpenMP/16        1276 ms          899 ms            1
+BM_OpenMP/20        1210 ms          792 ms            1
+BM_OpenMP/24        1159 ms          669 ms            1
+BM_OpenMP/28        1141 ms          653 ms            1
+BM_OpenMP/32        1076 ms          522 ms            1
+make[1]: Leaving directory '/run/media/omar/Storage/omar/College/Spring 2024/HPC/Project/ParaFilter'
+
+real	0m1.317s
+user	0m0.304s
+sys	0m0.142s
+
+real	0m1.322s
+user	0m0.451s
+sys	0m0.300s
+
+real	0m1.291s
+user	0m0.457s
+sys	0m0.775s
+
+real	0m1.409s
+user	0m0.880s
+sys	0m1.853s

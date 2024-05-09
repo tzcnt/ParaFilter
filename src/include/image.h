@@ -28,30 +28,8 @@ struct Image {
     return Image(raw_data, width, height, channels);
   };
 
-  struct Iterator {
-    unsigned char *ptr;
-    int step;
-
-    Iterator(unsigned char *ptr, int step) : ptr(ptr), step(step) {}
-
-    Iterator &operator++() {
-      ptr += step;
-      return *this;
-    }
-
-    bool operator!=(const Iterator &other) const { return ptr != other.ptr; }
-
-    unsigned char *operator*() { return ptr; }
-  };
-
-  Iterator begin() { return Iterator(data.get(), channels); }
-
-  Iterator end() {
-    return Iterator(data.get() + width * height * channels, channels);
-  }
-
   bool save(const char *filename, const char *format);
 
-  bool pad(int borderSize);
-  bool pad_vertical(int borderSize);
+  bool padZeros(int borderSize);
+  bool padReplication(int borderSize);
 };

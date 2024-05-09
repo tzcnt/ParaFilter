@@ -9,11 +9,10 @@
  * @brief Enum class to maintain a strong type for different types of filters.
  */
 enum class Filter {
-  LowPass3x3,  ///< Low pass filter with a 3x3 kernel.
-  LowPass5x5,  ///< Low pass filter with a 5x5 kernel.
-  HighPass3x3, ///< High pass filter with a 3x3 kernel.
-  HighPass5x5, ///< High pass filter with a 5x5 kernel.
-  Gaussian     ///< Gaussian blur filter.
+  LowPass3x3 = 0,  ///< Low pass filter with a 3x3 kernel.
+  LowPass5x5 = 1,  ///< Low pass filter with a 5x5 kernel.
+  HighPass3x3 = 2, ///< High pass filter with a 3x3 kernel.
+  Gaussian = 3     ///< Gaussian blur filter.
 };
 
 /**
@@ -29,5 +28,3 @@ using Kernel = std::vector<std::vector<float>>;
 extern std::map<Filter, Kernel> kernels;
 Image applyKernelSeq(Image &img, const Kernel &kernel);
 Image applyKernelOpenMp(Image &img, const Kernel &kernel, int nthreads);
-Image applyKernelOpenMpTiling(Image &img, const Kernel &kernel, int nthreads);
-Image applyKernelMPI(Image &img, const Kernel &kernel);

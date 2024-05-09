@@ -11,7 +11,7 @@ INCDIRS=. ./src/include
 CC=g++
 OPT=-O0
 
-DEBUGFLAGS=-g -ggdb
+DEUBG_FLAGS=-g -ggdb
 RELEASE_FLAGS=-O3 -march=native -mtune=native -flto -fuse-linker-plugin -ftree-vectorize
 DEPFLAGS=-MP -MD
 CFLAGS=-Wall -Wextra -fopenmp $(foreach D,$(INCDIRS),-I$(D)) $(OPT) $(DEPFLAGS)
@@ -30,7 +30,7 @@ BENCHOBJECTS=$(patsubst %.cpp,%.o,$(BENCHFILES))
 
 DEPFILES=$(patsubst %.cpp,%.d,$(CPPFILES) $(TESTFILES) $(BENCHFILES))
 
-NUM_PROCESS=4
+NUM_PROCESS ?= 4
 
 all: $(BINARY_DEBUG)
 
@@ -38,10 +38,10 @@ debug: $(BINARY_DEBUG)
 	$(BINARY_DEBUG)
 
 $(BINARY_DEBUG): $(OBJECTS)
-	$(CC) $(DEBUGFLAGS) -fopenmp -o $@ $^
+	$(CC) $(DEUBG_FLAGS) -fopenmp -o $@ $^
 
 $(BINARY_MPI): $(OBJECTS_MPI)
-	mpic++ $(DEBUGFLAGS) -DUSE_MPI=1 -fopenmp -o $@ $^
+	mpic++ $(RELEASE_FLAGS) $(EXTRA_FLAGS) -DUSE_MPI=1 -fopenmp -o $@ $^
 
 release: $(BINARY_RELEASE)
 	$(BINARY_RELEASE)
@@ -56,7 +56,7 @@ $(BINARY_BENCH): $(OBJECTS_NOMAIN) $(BENCHOBJECTS)
 	$(CC) $(RELEASE_FLAGS) $(LDFLAGS_BENCH) -fopenmp -o $@ $^
 
 mpi_run: $(BINARY_MPI)
-	mpirun -n $(NUM_PROCESS) $(BINARY_MPI)
+	mpirun  --map-by :OVERSUBSCRIBE -n $(NUM_PROCESS) $(BINARY_MPI)
 
 %_mpi.o:%.cpp
 	mpic++ $(CFLAGS) -DUSE_MPI=1 -c -o $@ $<
@@ -68,10 +68,23 @@ clean:
 	rm -rf $(BINARY_DEBUG) $(BINARY_RELEASE) $(BINARY_TEST) $(BINARY_BENCH) $(BINARY_MPI) $(OBJECTS) $(OBJECTS_MPI) $(TESTOBJECTS) $(BENCHOBJECTS) $(DEPFILES)
 
 bench: $(BINARY_BENCH)
-	./$(BINARY_BENCH)
+	$(BINARY_BENCH)
+
+bench-mpi: $(BINARY_MPI)
+	@sh -c 'time mpirun --map-by :OVERSUBSCRIBE -n 2 $(BINARY_MPI)'
+	@sh -c 'time mpirun --map-by :OVERSUBSCRIBE -n 4 $(BINARY_MPI)'
+	@sh -c 'time mpirun --map-by :OVERSUBSCRIBE -n 8 $(BINARY_MPI)'
+	@sh -c 'time mpirun --map-by :OVERSUBSCRIBE -n 16 $(BINARY_MPI)'
+
+bench-report: $(BINARY_MPI) $(BINARY_BENCH)
+	@echo "Generating Report..."
+	@sh -c 'make bench >> bench_report.txt'
+	@sh -c 'make bench-mpi 2>> bench_report.txt'
+	@sh -c 'sed "s/make.*//g"'
+
 
 test: $(BINARY_TEST)
-	./$(BINARY_TEST)
+	$(BINARY_TEST)
 
 # include the dependencies
 -include $(DEPFILES)
