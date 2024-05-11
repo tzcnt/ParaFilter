@@ -1,0 +1,3 @@
+./examples/lena.png
+./outputs/lena_seq.png
+1

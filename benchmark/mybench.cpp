@@ -9,7 +9,7 @@ static void BM_Sequential(benchmark::State &state) {
 
   // Load image
   Image img = Image::load(inputFile);
-  Kernel kernel = kernels[Filter::HighPass3x3];
+  Kernel kernel = kernels[Filter::LowPass3x3];
   img.padReplication(kernel.size() / 2);
   for (auto _ : state) {
     Image outputImage = applyKernelSeq(img, kernel);
@@ -19,12 +19,12 @@ static void BM_OpenMP(benchmark::State &state) {
   // Perform setup here
   int width, height, channels;
   auto nthreads = state.range(0);
-  const char *inputFile = "./examples/lena.ng";
+  const char *inputFile = "./examples/lena.png";
   const char *outputFile = "./outputs/lena_modified.png";
 
   // Load image
   Image img = Image::load(inputFile);
-  Kernel kernel = kernels[Filter::HighPass3x3];
+  Kernel kernel = kernels[Filter::LowPass3x3];
   img.padReplication(kernel.size() / 2);
   for (auto _ : state) {
     Image outputImage = applyKernelOpenMp(img, kernel, nthreads);

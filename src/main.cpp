@@ -64,8 +64,8 @@ int main(int argc, char *argv[]) {
 
   Image local_sub_image(sub_image_data, img.width, (rows_per_process + extra),
                         img.channels);
-#ifdef USE_OM
-  Image processed_sub_image = applyKernelOpenMp(local_sub_image, kernel);
+#ifdef OPENMP
+  Image processed_sub_image = applyKernelOpenMp(local_sub_image, kernel, 7);
 #else
   Image processed_sub_image = applyKernelSeq(local_sub_image, kernel);
 #endif
@@ -127,7 +127,7 @@ int main() {
     int choice;
     cout << "Select a kernel option:\n";
     cout << "1. Low Pass 3x3\n";
-    cout << "2. Low Pass 3x3\n";
+    cout << "2. Low Pass 5x5\n";
     cout << "3. High Pass 3x3\n";
     cout << "4. Gaussian\n";
     cout << "5. Input custom kernel\n";
@@ -160,7 +160,11 @@ int main() {
     }
 
     img.padReplication(kernel.size() / 2);
-    Image outputImage = applyKernelOpenMp(img, kernel, 1);
+#ifdef OPENMP
+    Image outputImage = applyKernelOpenMp(img, kernel, 8);
+#else
+    Image outputImage = applyKernelSeq(img, kernel);
+#endif
     string fileExtension = getFileExtension(outputFile);
 
     // Save the processed image

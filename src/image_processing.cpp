@@ -1,6 +1,8 @@
 #include "include/image_processing.h"
 #include "include/image.h"
+#include <algorithm>
 #include <cstring>
+#include <iostream>
 #include <omp.h>
 #include <vector>
 
@@ -83,6 +85,7 @@ Image applyKernelSeq(Image &img, const Kernel &kernel) {
 /**
  * @brief Applies a convolution kernel to an input image to produce an output image but uses OpenMP.
  */
+#ifdef OPENMP
 Image applyKernelOpenMp(Image &img, const Kernel &kernel, int nthreads) {
   int kernelSize = kernel.size();
   int kHalf = kernelSize / 2;
@@ -128,3 +131,4 @@ Image applyKernelOpenMp(Image &img, const Kernel &kernel, int nthreads) {
   }
   return Image(output, img.width, img.height, img.channels);
 }
+#endif
