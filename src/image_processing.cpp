@@ -102,8 +102,6 @@ Image applyKernelOpenMp(Image &img, const Kernel &kernel, int nthreads) {
 #pragma omp parallel for collapse(2)
   for (int y = kHalf; y < img.height - kHalf; y++) {
     for (int x = kHalf; x < img.width - kHalf; x++) {
-      /* std::vector<std::vector<float>> sum(img.channels, */
-      /*                                     std::vector<float>(PAD, 0.0f)); */
       std::vector<float> sum(img.channels, 0.0f);
 
       // Perform the convolution operation

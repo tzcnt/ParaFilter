@@ -27,7 +27,7 @@ BENCHFILES=$(foreach D,$(BENCHDIRS),$(wildcard $(D)/*.cpp))
 OBJECTS=$(patsubst %.cpp,%_seq.o,$(CPPFILES))
 OBJECTS_OPENMP=$(patsubst %.cpp,%_openmp.o,$(CPPFILES))
 OBJECTS_MPI=$(patsubst %.cpp,%_mpi.o,$(CPPFILES))
-OBJECTS_NOMAIN=$(patsubst %.cpp,%.o,$(filter-out ./src/main.cpp, $(CPPFILES)))  # Excludes main.cpp
+OBJECTS_NOMAIN=$(patsubst %.cpp,%_openmp.o,$(filter-out ./src/main.cpp, $(CPPFILES)))  # Excludes main.cpp
 TESTOBJECTS=$(patsubst %.cpp,%.o,$(TESTFILES))
 BENCHOBJECTS=$(patsubst %.cpp,%.o,$(BENCHFILES))
 
