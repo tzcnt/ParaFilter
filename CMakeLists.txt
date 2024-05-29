@@ -4,10 +4,17 @@ project(ParaFilter)
 # Set the C++ compiler and the flags
 set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -fopenmp")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -ggdb")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -flto -fuse-linker-plugin -ftree-vectorize")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -ggdb ${CMAKE_CXX_FLAGS_USER}")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -flto -fuse-linker-plugin -ftree-vectorize ${CMAKE_CXX_FLAGS_USER}")
+
+add_definitions("-DOPENMP")
 
 # Include directories
+include_directories(
+    "/usr/lib/x86_64-linux-gnu/openmpi/include"
+    "/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"
+)
+link_libraries("/usr/lib/x86_64-linux-gnu/openmpi/lib" "mpi")
 include_directories(${CMAKE_SOURCE_DIR}/src/include ${CMAKE_SOURCE_DIR})
 
 # Find all source files
