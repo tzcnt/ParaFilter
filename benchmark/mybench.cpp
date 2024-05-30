@@ -5,11 +5,10 @@ static const char *inputFile = "./4k_wallpaper.jpg";
 static const char *outputFile = "./lena_modified.png";
 static void BM_Sequential(benchmark::State &state) {
   // Perform setup here
-  int width, height, channels;
 
   // Load image
   Image img = Image::load(inputFile);
-  Kernel kernel = kernels[Filter::LowPass3x3];
+  auto kernel = Kernels::Filter::LowPass3x3();
   img.padReplication(kernel.size() / 2);
   for (auto _ : state) {
     Image outputImage = applyKernelSeq(img, kernel);
@@ -17,12 +16,11 @@ static void BM_Sequential(benchmark::State &state) {
 }
 static void BM_OpenMP(benchmark::State &state) {
   // Perform setup here
-  int width, height, channels;
   auto nthreads = state.range(0);
 
   // Load image
   Image img = Image::load(inputFile);
-  Kernel kernel = kernels[Filter::LowPass3x3];
+  auto kernel = Kernels::Filter::LowPass3x3();
   img.padReplication(kernel.size() / 2);
   for (auto _ : state) {
     Image outputImage = applyKernelOpenMp(img, kernel, nthreads);
