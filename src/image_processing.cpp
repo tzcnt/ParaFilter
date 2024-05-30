@@ -87,9 +87,8 @@ Image applyKernelSeq(Image &img, const Kernel &kernel) {
   return Image(output, img.width, img.height, img.channels);
 }
 
-tmc::task<void> work(int i, int kHalf, unsigned char *output, Image &img,
+tmc::task<void> work(int y, int kHalf, unsigned char *output, Image &img,
                      const Kernel &kernel) {
-  int y = kHalf + i;
   for (int x = kHalf; x < img.width - kHalf; x++) {
     std::vector<float> sum(img.channels, 0.0f);
 
@@ -128,12 +127,9 @@ Image applyKernelTooManyCooks(Image &img, const Kernel &kernel) {
 
   memcpy(output, img.data.get(), img.width * img.height * img.channels);
 
-  //kHalf, img.height - kHalf
-  std::vector<tmc::task<void>> tasks;
-  tasks.resize(img.height - 2 * kHalf);
-  for (int i = 0; i < img.height - 2 * kHalf; ++i) {
-    tasks[i] = work(i, kHalf, output, img, kernel);
-  }
+  auto tasks = std::ranges::views::iota(kHalf) |
+               std::ranges::views::transform(
+                   [&](int y) { return work(y, kHalf, output, img, kernel); });
   // Loop over each pixel in the image
   tmc::post_bulk_waitable(tmc::cpu_executor(), tasks.begin(),
                           img.height - 2 * kHalf, 0)

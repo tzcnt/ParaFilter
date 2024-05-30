@@ -91,3 +91,9 @@ add_custom_target(test-bin
 add_custom_target(bench
     COMMAND ./bin-bench
 )
+
+add_custom_command(TARGET bin-bench POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${CMAKE_BINARY_DIR}/compile_commands.json
+    ${CMAKE_CURRENT_LIST_DIR}/build
+)

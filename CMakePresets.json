@@ -6,7 +6,7 @@
       "displayName": "Clang-Linux Debug",
       "generator": "Ninja",
       "description": "Using compilers: C = clang, CXX = clang++",
-      "binaryDir": "${sourceDir}/build",
+      "binaryDir": "${sourceDir}/build/clang-linux-debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_C_COMPILER": "clang",
@@ -24,7 +24,7 @@
       "displayName": "Clang-Linux Release",
       "generator": "Ninja",
       "description": "Using compilers: C = clang, CXX = clang++",
-      "binaryDir": "${sourceDir}/build",
+      "binaryDir": "${sourceDir}/build/clang-linux-release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_C_COMPILER": "clang",
@@ -43,7 +43,7 @@
       "displayName": "Clang-Linux Release with Debug Info",
       "generator": "Ninja",
       "description": "Using compilers: C = clang, CXX = clang++",
-      "binaryDir": "${sourceDir}/build",
+      "binaryDir": "${sourceDir}/build/clang-linux-relwithdebinfo",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "RelWithDebInfo",
         "CMAKE_C_COMPILER": "clang",
@@ -61,7 +61,7 @@
       "displayName": "GCC-Linux Debug",
       "generator": "Ninja",
       "description": "Using compilers: C = gcc, CXX = g++",
-      "binaryDir": "${sourceDir}/build",
+      "binaryDir": "${sourceDir}/build/gcc-linux-debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_C_COMPILER": "gcc",
@@ -79,7 +79,7 @@
       "displayName": "GCC-Linux Release",
       "generator": "Ninja",
       "description": "Using compilers: C = gcc, CXX = g++",
-      "binaryDir": "${sourceDir}/build",
+      "binaryDir": "${sourceDir}/build/gcc-linux-release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_C_COMPILER": "gcc",
@@ -98,7 +98,7 @@
       "displayName": "GCC-Linux Release with Debug Info",
       "generator": "Ninja",
       "description": "Using compilers: C = gcc, CXX = g++",
-      "binaryDir": "${sourceDir}/build",
+      "binaryDir": "${sourceDir}/build/gcc-linux-relwithdebinfo",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "RelWithDebInfo",
         "CMAKE_C_COMPILER": "gcc",
