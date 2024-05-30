@@ -1,7 +1,9 @@
 #pragma once
 #include <map>
 #include <vector>
+#ifdef OPENMP
 #include <omp.h>
+#endif
 #include "image.h"
 
 /**
@@ -27,4 +29,7 @@ using Kernel = std::vector<std::vector<float>>;
  */
 extern std::map<Filter, Kernel> kernels;
 Image applyKernelSeq(Image &img, const Kernel &kernel);
+#ifdef OPENMP
 Image applyKernelOpenMp(Image &img, const Kernel &kernel, int nthreads);
+#endif
+Image applyKernelTooManyCooks(Image &img, const Kernel &kernel, int nthreads);

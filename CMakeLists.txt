@@ -3,19 +3,55 @@ project(ParaFilter)
 
 # Set the C++ compiler and the flags
 set(CMAKE_CXX_COMPILER g++)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -fopenmp")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -ggdb ${CMAKE_CXX_FLAGS_USER}")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -flto -fuse-linker-plugin -ftree-vectorize ${CMAKE_CXX_FLAGS_USER}")
+set(CMAKE_CXX_STANDARD 20)
 
-add_definitions("-DOPENMP")
+add_definitions(
+    "-march=native"
+    "-DTMC_WORK_ITEM=FUNC" # one of: CORO, FUNC, FUNCORO, FUNCORO32
+)
+
+set(CMAKE_MODULE_PATH
+    ${ParaFilter_SOURCE_DIR}/cmake
+    ${CMAKE_MODULE_PATH})
+
+include(cmake/CPM.cmake)
 
 # Include directories
-include_directories(
-    "/usr/lib/x86_64-linux-gnu/openmpi/include"
-    "/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"
-)
-link_libraries("/usr/lib/x86_64-linux-gnu/openmpi/lib" "mpi")
+# include_directories(
+#     "/usr/lib/x86_64-linux-gnu/openmpi/include"
+#     "/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"
+# ) 
 include_directories(${CMAKE_SOURCE_DIR}/src/include ${CMAKE_SOURCE_DIR})
+
+CPMAddPackage(
+        NAME TooManyCooks
+        GIT_REPOSITORY https://github.com/tzcnt/TooManyCooks.git
+        GIT_TAG 82a0e7ace8857af9fa8bdc6635c7b9a98371a2ba
+        DOWNLOAD_ONLY)
+
+    include_directories(
+        ${TooManyCooks_SOURCE_DIR}/include
+    )
+
+
+# HWLOC support
+option(TMC_USE_HWLOC "libhwloc" ON)
+
+if(TMC_USE_HWLOC)
+    message(STATUS "TMC_USE_HWLOC: running find_package(libhwloc)...")
+    find_package(libhwloc)
+
+    if(NOT LIBHWLOC_FOUND)
+        message(FATAL_ERROR "TMC_USE_HWLOC: ERROR package libhwloc not found")
+    else()
+        message(STATUS "TMC_USE_HWLOC: using ${LIBHWLOC_LIBRARY}")
+        add_compile_definitions(TMC_USE_HWLOC)
+        link_libraries(${LIBHWLOC_LIBRARY})
+    endif()
+endif()
 
 # Find all source files
 file(GLOB_RECURSE SOURCES "src/*.cpp")

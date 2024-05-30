@@ -2,6 +2,61 @@
   "version": 3,
   "configurePresets": [
     {
+      "name": "clang-linux-debug",
+      "displayName": "Clang-Linux Debug",
+      "generator": "Ninja",
+      "description": "Using compilers: C = clang, CXX = clang++",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "clang-linux-release",
+      "displayName": "Clang-Linux Release",
+      "generator": "Ninja",
+      "description": "Using compilers: C = clang, CXX = clang++",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_CXX_FLAGS_USER": "-DTMC_TRIVIAL_TASK",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "clang-linux-relwithdebinfo",
+      "displayName": "Clang-Linux Release with Debug Info",
+      "generator": "Ninja",
+      "description": "Using compilers: C = clang, CXX = clang++",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
       "name": "gcc-linux-debug",
       "displayName": "GCC-Linux Debug",
       "generator": "Ninja",
