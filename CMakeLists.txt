@@ -2,15 +2,13 @@ cmake_minimum_required(VERSION 3.10)
 project(ParaFilter)
 
 # Set the C++ compiler and the flags
-set(CMAKE_CXX_COMPILER g++)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -ggdb ${CMAKE_CXX_FLAGS_USER}")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -flto -fuse-linker-plugin -ftree-vectorize ${CMAKE_CXX_FLAGS_USER}")
 set(CMAKE_CXX_STANDARD 20)
 
 add_definitions(
     "-march=native"
-    "-DTMC_WORK_ITEM=FUNC" # one of: CORO, FUNC, FUNCORO, FUNCORO32
+    "-DTMC_WORK_ITEM=CORO" # one of: CORO, FUNC, FUNCORO, FUNCORO32
 )
 
 set(CMAKE_MODULE_PATH
@@ -21,21 +19,20 @@ include(cmake/CPM.cmake)
 
 # Include directories
 # include_directories(
-#     "/usr/lib/x86_64-linux-gnu/openmpi/include"
-#     "/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"
-# ) 
+# "/usr/lib/x86_64-linux-gnu/openmpi/include"
+# "/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"
+# )
 include_directories(${CMAKE_SOURCE_DIR}/src/include ${CMAKE_SOURCE_DIR})
 
 CPMAddPackage(
-        NAME TooManyCooks
-        GIT_REPOSITORY https://github.com/tzcnt/TooManyCooks.git
-        GIT_TAG 82a0e7ace8857af9fa8bdc6635c7b9a98371a2ba
-        DOWNLOAD_ONLY)
+    NAME TooManyCooks
+    GIT_REPOSITORY https://github.com/tzcnt/TooManyCooks.git
+    GIT_TAG 82a0e7ace8857af9fa8bdc6635c7b9a98371a2ba
+    DOWNLOAD_ONLY)
 
-    include_directories(
-        ${TooManyCooks_SOURCE_DIR}/include
-    )
-
+include_directories(
+    ${TooManyCooks_SOURCE_DIR}/include
+)
 
 # HWLOC support
 option(TMC_USE_HWLOC "libhwloc" ON)

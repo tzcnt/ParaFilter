@@ -38,14 +38,16 @@ static void BM_TooManyCooks(benchmark::State &state) {
   // Perform setup here
   int width, height, channels;
   auto nthreads = state.range(0);
+  tmc::cpu_executor().set_thread_count(nthreads).init();
 
   // Load image
   Image img = Image::load(inputFile);
   Kernel kernel = kernels[Filter::LowPass3x3];
   img.padReplication(kernel.size() / 2);
   for (auto _ : state) {
-    Image outputImage = applyKernelTooManyCooks(img, kernel, nthreads);
+    Image outputImage = applyKernelTooManyCooks(img, kernel);
   }
+  tmc::cpu_executor().teardown();
 }
 
 // Register the function as a benchmark

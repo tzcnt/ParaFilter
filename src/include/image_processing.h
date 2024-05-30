@@ -32,4 +32,4 @@ Image applyKernelSeq(Image &img, const Kernel &kernel);
 #ifdef OPENMP
 Image applyKernelOpenMp(Image &img, const Kernel &kernel, int nthreads);
 #endif
-Image applyKernelTooManyCooks(Image &img, const Kernel &kernel, int nthreads);
+Image applyKernelTooManyCooks(Image &img, const Kernel &kernel);
