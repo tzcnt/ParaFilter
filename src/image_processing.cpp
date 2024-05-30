@@ -55,10 +55,13 @@ Image applyKernelSeq(Image &img, const Kernel &kernel) {
 
   memcpy(output, img.data.get(), img.width * img.height * img.channels);
 
+  std::vector<float> sum(img.channels, 0.0f);
   // Loop over each pixel in the image
   for (int y = kHalf; y < img.height - kHalf; y++) {
     for (int x = kHalf; x < img.width - kHalf; x++) {
-      std::vector<float> sum(img.channels, 0.0f);
+      for (int c = 0; c < img.channels; c++) {
+        sum[c] = 0.0f;
+      }
 
       // Perform the convolution operation
       for (int ky = -kHalf; ky <= kHalf; ky++) {
@@ -89,8 +92,11 @@ Image applyKernelSeq(Image &img, const Kernel &kernel) {
 
 tmc::task<void> work(int y, int kHalf, unsigned char *output, Image &img,
                      const Kernel &kernel) {
+  std::vector<float> sum(img.channels, 0.0f);
   for (int x = kHalf; x < img.width - kHalf; x++) {
-    std::vector<float> sum(img.channels, 0.0f);
+    for (int c = 0; c < img.channels; c++) {
+      sum[c] = 0.0f;
+    }
 
     // Perform the convolution operation
     for (int ky = -kHalf; ky <= kHalf; ky++) {
