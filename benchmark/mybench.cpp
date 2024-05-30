@@ -1,7 +1,7 @@
 #include <benchmark/benchmark.h>
 #include "../src/include/image_processing.h"
 
-static const char *inputFile = "./lena.png";
+static const char *inputFile = "./4k_wallpaper.jpg";
 static const char *outputFile = "./lena_modified.png";
 static void BM_Sequential(benchmark::State &state) {
   // Perform setup here
